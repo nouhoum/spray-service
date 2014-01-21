@@ -10,7 +10,7 @@ trait JobBusinessComponent {
   def jobBusiness: JobBusiness = new JobBusiness {}
 
   trait JobBusiness {
-    def get(id: String): Future[Option[JobPosting]] = jobRepository.get(id)
+    def get(id: Int): Future[Option[JobPosting]] = jobRepository.get(id)
   }
 
 }

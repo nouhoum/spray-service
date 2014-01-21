@@ -5,6 +5,9 @@ import akka.actor.{Props, Actor}
 import com.nouhoum.jobpostings.repos.InMemoryJobRepositoryComponent
 import com.nouhoum.jobpostings.JobPosting
 
+import scala.concurrent.ExecutionContext.Implicits.global
+import spray.httpx.SprayJsonSupport
+
 class JobPostingServiceActor extends Actor with JobPostingService with JobBusinessComponent with InMemoryJobRepositoryComponent {
   def actorRefFactory = context
 
@@ -17,22 +20,22 @@ object JobPostingServiceActor {
 
 import spray.json.DefaultJsonProtocol
 
-object JsonFormats extends DefaultJsonProtocol {
+object JsonFormats extends DefaultJsonProtocol with SprayJsonSupport {
   implicit val jobFormat = jsonFormat3(JobPosting)
 }
 
-trait JobPostingService extends HttpService with DefaultJsonProtocol {
-  this: JobBusinessComponent =>
+import JsonFormats._
 
-  implicit val jobFormat = jsonFormat3(JobPosting)
+trait JobPostingService extends HttpService {
+  this: JobBusinessComponent =>
 
   val route = pathPrefix("jobs") {
     path(IntNumber) {
       jobId =>
         get {
-          complete {
-            s"Getting offer with id = $jobId"
-            jobBusiness.get(jobId.toString).mapTo[Option[JobPosting]]
+          s"Getting offer with id = $jobId"
+          onSuccess(jobBusiness.get(jobId)) {job =>
+            complete(job)
           }
         } ~
           delete {
