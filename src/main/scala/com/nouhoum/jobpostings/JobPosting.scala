@@ -1,3 +1,3 @@
 package com.nouhoum.jobpostings
 
-case class JobPosting(id: Int, title: String, description: String)
+case class JobPosting(id: Option[Int], title: String, description: String)

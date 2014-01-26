@@ -11,6 +11,9 @@ trait JobBusinessComponent {
 
   trait JobBusiness {
     def get(id: Int): Future[Option[JobPosting]] = jobRepository.get(id)
+    def delete(id: Int): Future[Option[JobPosting]] = jobRepository.delete(id)
+    def getAll(): Future[List[JobPosting]] = jobRepository.getAll()
+    def post(job: JobPosting): Future[JobPosting] = jobRepository.insert(job)
+    def update(job: JobPosting): Future[JobPosting] = jobRepository.update(job)
   }
-
 }
